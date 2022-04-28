@@ -16,6 +16,7 @@
     "core-js": "^3.8.3",
     "csv-loader": "^3.0.3",
     "d3": "^7.4.4",
+    "file-saver": "^2.0.5",
     "vue": "^3.2.13",
     "vue-papa-parse": "^3.0.5",
     "vuestic-ui": "^1.4.0-alpha1"
