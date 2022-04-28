@@ -9,6 +9,13 @@
       value-by="Codice"
       clearable
     />
+    <va-date-input
+      class="display-7"
+      label="Date di permanenza"
+      v-model="date_permanenza"
+      clearable
+      mode="range"
+    />
   </div>
   <div class="row">
       <va-input
@@ -78,7 +85,6 @@
     :loading="false"
     searchable
     clearable
-    @scrollBottom="pushMoreOptions()"
   />
     </div>
     <div class="row">
@@ -113,9 +119,9 @@
     v-model="createdItem.numero_documento"
     clearable
   />
-    </div>
+  </div>
   <div class="px-2">
-    <va-button  @click="addNewItem()" :disabled="!isNewData"> Aggiungi </va-button>
+    <va-button  @click="addNewItem()" > Aggiungi </va-button>
   </div>
   
   <va-divider>
@@ -125,7 +131,8 @@
     <va-input
       class="mb-4"
       type="textarea"
-      :placeholder="createdItem.toString"
+      v-model="write_text"
+      placeholder="Anteprima del file txt"
       readonly
     />
 
@@ -177,7 +184,9 @@ import tipo_alloggiato from "../data/tipo_alloggiato.csv";
 import province from '../data/province-sigle.csv';
 
 const defaultItem = {
-  provincia_nascita: ""
+  tipo_alloggiato: "",
+  provincia_nascita: "",
+  luogo_rilascio_documento: "",
 };
 
 export default defineComponent({
@@ -232,6 +241,10 @@ export default defineComponent({
     return {
       items,
       columns,
+      date_permanenza: {
+          start: null,
+          end: null
+      },
       editedItemId: null,
       editedItem: null,
       createdItem: { ...defaultItem },
@@ -285,6 +298,21 @@ export default defineComponent({
       // console.log(this.documenti);
       return this.documenti;
     },
+    write_text() {
+      let plain_text = ""
+      let temp_items = this.items
+      console.log('temp' + temp_items.toString())
+      for (let i in temp_items) {
+        let item = temp_items[parseInt(i)]
+        if (Boolean(item.tipo_alloggiato)=== true) {
+          plain_text+=item.tipo_alloggiato+"\n"
+        } else {
+          continue
+        }
+      }   
+    console.log('plain: \t'+plain_text)     
+    return plain_text!="" ? plain_text : ""
+    }
   },
   mounted() {
     this.temp = "";
@@ -305,9 +333,10 @@ export default defineComponent({
       this.items = [...this.items.slice(0, id), ...this.items.slice(id + 1)];
     },
     addNewItem() {
-      this.createdItem.tipo_alloggiato = this.createdItem.tipo_alloggiato.padStart(2, ' ')
-      this.createdItem.data_arrivo = this.formatDate(this.createdItem.data_arrivo)
-      // this.createdItem.giorni_permanenza = this.formatDate(this.createdItem.giorni_permanenza)
+      this.createdItem.tipo_alloggiato = this.createdItem.tipo_alloggiato.toString().padStart(2, ' ')
+      this.createdItem.data_arrivo = this.formatDate(this.date_permanenza.start)
+      this.createdItem.giorni_permanenza = parseInt((this.date_permanenza.end - this.date_permanenza.start)/(24*60*60*1e3)).toString().padStart(2, '0')
+     // this.createdItem.giorni_permanenza = this.formatDate(this.createdItem.giorni_permanenza)
       this.createdItem.data_nascita = this.formatDate(this.createdItem.data_nascita)
       this.items = [...this.items, { ...this.createdItem }];
       this.resetCreatedItem();
@@ -344,9 +373,6 @@ export default defineComponent({
     openModalToEditItemById(id) {
       this.editedItemId = id;
       this.editedItem = { ...this.items[id] };
-    },
-    format_codice(s) {
-      return "CODICE: " + s.toString;
     },
     set_readonly() {
         if (this.createdItem.tipo_alloggiato  == 19 || this.createdItem.tipo_alloggiato == 20) {
