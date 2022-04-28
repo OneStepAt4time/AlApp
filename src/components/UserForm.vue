@@ -1,39 +1,149 @@
 <template>
-    <va-form ref="form">
-     <va-select style="max-width: 300px;"
-     class="mb-4"
-        label="Tipo Alloggiato"
-        :options='options'
-        v-model='selected_alloggio'
-        text-by= "Descrizione"
-        value-by="Codice"
-      />
-      {{selected_alloggio}}
-    <va-select style="max-width: 300px;"
-     class="mb-4"
-        label="Comuni"
-        :options='optionss'
-        v-model='selected_comune'
-        text-by= "Descrizione"
-        value-by="Codice"
-        searchable
-      />
-    </va-form>
 
-<!--  <va-data-table :items="items" :columns="columns" striped>
+  <div class="row">
+    <va-select
+      label="Tipo Alloggiato"
+      :options="tipi_alloggiato"
+      v-model="createdItem.tipo_alloggiato"
+      text-by="Descrizione"
+      value-by="Codice"
+      clearable
+    />
+  </div>
+  <div class="row">
+      <va-input
+        class="flex"
+        label="Nome"
+        placeholder=""
+        v-model="createdItem.nome"
+        clearable
+      />
+
+      <va-input
+        class="flex"
+        label="Cognome"
+        placeholder=""
+        v-model="createdItem.cognome"
+        clearable
+      />
+      <va-select
+        class="flex"
+        label="Sesso"
+        :options="tipi_sesso"
+        v-model="createdItem.sesso"
+        text-by="Sesso"
+        value-by="Codice"
+        clearable
+      />
+  </div>
+  <va-date-input
+    class="display-7"
+    label="Data di Nascita"
+    placeholder="Seleziona la data"
+    v-model="createdItem.data_nascita"
+    clearable
+  />
+  {{ formatDate(createdItem.data_nascita) }}
+
+  <va-select
+    label="Stato di Nascita"
+    :options="tipi_stati"
+    v-model="createdItem.stato_nascita"
+    text-by="Descrizione"
+    value-by="Codice"
+    outline
+    searchable
+    clearable
+    track-by="Codice"
+    @scrollBottom="pushMoreOptions()"
+  />
+  <va-select
+    label="Provincia di Nascita"
+    :options="tipi_province"
+    v-model="createdItem.provincia_nascita"
+    text-by="Provincia"
+    value-by="Sigla"
+    outline
+    searchable
+    clearable
+    track-by="Sigla"
+    @scrollBottom="pushMoreOptions()"
+  />
+  <va-select
+    label="Comune nascita"
+    :options="find_comune"
+    v-model="createdItem.comune_nascita"
+    text-by="Descrizione"
+    value-by="Codice"
+    outline
+    :loading="false"
+    searchable
+    clearable
+    @scrollBottom="pushMoreOptions()"
+  />
+  <va-select
+    label="Cittadinanza"
+    :options="tipi_stati"
+    v-model="createdItem.cittadinanza"
+    text-by="Descrizione"
+    value-by="Codice"
+    outline
+    searchable
+    clearable
+    track-by="Codice"
+  />
+
+  <va-select
+    label="Tipo documento"
+    :options="tipi_documento"
+    v-model="createdItem.tipo_documento"
+    text-by="Descrizione"
+    value-by="Codice"
+    outline
+    searchable
+    clearable
+    :readonly="set_readonly()"
+    track-by="Codice"
+  />
+
+  <va-input
+    label="Numero documento"
+    placeholder=""
+    v-model="createdItem.numero_documento"
+    clearable
+  />
+  <div class="px-2">
+    <va-button  @click="addNewItem()" :disabled="!isNewData"> Aggiungi </va-button>
+  </div>
+  
+    <h6>codice:{{createdItem}} </h6>
+
+  <va-divider>
+      <span class="px-2">Tabella</span>
+  </va-divider>
+
+    <va-input
+      class="mb-4"
+      v-model="fetchData"
+      type="textarea"
+      placeholder="Basic textarea"
+      readonly
+    />
+
+  <va-divider>
+      <span class="px-2">Tabella</span>
+  </va-divider>
+
+  <va-data-table :items="items" :columns="columns" striped>
     <template #headerAppend>
       <tr class="table-example--slot">
         <th v-for="key in Object.keys(createdItem)" :key="key" colspan="1">
-          <va-input :placeholder="key" v-model="createdItem[key]" />
+          <!-- <va-input :placeholder="key" v-model="createdItem[value]" />  -->
         </th>
         <th colspan="1">
-          <va-button @click="addNewItem()" :disabled="!isNewData">
-            Add
-          </va-button>
         </th> 
       </tr>
     </template>
-
     <template #cell(actions)="{ rowIndex }">
       <va-button flat icon="edit" @click="openModalToEditItemById(rowIndex)" />
       <va-button flat icon="delete" @click="deleteItemById(rowIndex)" />
@@ -55,67 +165,61 @@
         v-model="editedItem[key]"
       />
     </slot>
-  </va-modal> -->
+  </va-modal>  
 </template>
 
 <script>
 import { defineComponent } from "vue";
-import comuni from '../data/comuni.csv'
-import stati from '../data/stati.csv'
-// import documenti from '../data/documenti.csv'
-import tipo_alloggiato from '../data/tipo_alloggiato.csv';
-
+import sesso from "../data/sesso.csv";
+import comuni from "../data/comuni.csv";
+import stati from "../data/stati.csv";
+import documenti from "../data/documenti.csv";
+import tipo_alloggiato from "../data/tipo_alloggiato.csv";
+import province from '../data/province-sigle.csv';
 
 const defaultItem = {
+  provincia_nascita: ""
 };
-// const tipo_alloggiato_path = '../data/tipo_alloggiato.csv';
-//'../data/documenti.csv'
 
 export default defineComponent({
-  
+  name: 'form-elements',
   data() {
     const items = [
-      { 
+      {
         id: 0,
-        cittadinanza: 0,
-        cognome: "santonastaso",
-        data_arrivo: "1995-03-02 09:18:01",
-        data_nascita: "1995-03-02 09:18:01",
-        data_partenza: "2167-03-02 22:54:00",
-        // desc_cittadinanza: "asdsads",
-        // desc_comune_nascita: "dfsadfad",
-        // desc_provincia_nascita: "asdsad",
-        // desc_sesso: "sadsd",
-        // desc_stato_nascita: "asdsad",
-        // desc_tipo_alloggiato: "asdsadas",
+        cittadinanza: "",
+        cognome: "",
+        data_arrivo: "",
+        data_nascita: "",
+        data_partenza: "",
         comune_nascita: 0,
         provincia_nascita: 0,
         stato_nascita: 0,
-        luogo_rilascio_documento: "asdadsa",
-        nome: "emanuele",
-        numero_documento: "asdsadd",
+        luogo_rilascio_documento: "",
+        nome: "",
+        numero_documento: "",
         sesso: 0,
         tipo_alloggiato: 0,
-        tipo_documento: "dasdasd"
+        tipo_documento: "",
       },
     ];
     const columns = [
-      { key: "id", sortable: true },
-      {key: "nome", sortable: true},
-      {key: "cognome", sortable: true},
-      {key: "sesso", sortable: true},
-      {key: "data_nascita", sortable: true},
-      {key: "comune_nascita", sortable: true},
-      {key: "provincia_nascita", sortable: true},
-      {key: "stato_nascita", sortable: true},
-      {key: "cittadinanza", sortable: true},
+      { key: "id", sortable: true, value: 1 },
+      { key: "nome", sortable: true, value: this.input_tipo_documento },
+      { key: "cognome", sortable: true },
+      { key: "sesso", sortable: true },
+      { key: "data_nascita", sortable: true },
+      { key: "comune_nascita", sortable: true },
+      { key: "provincia_nascita", sortable: true },
+      { key: "stato_nascita", sortable: true },
+      { key: "cittadinanza", sortable: true },
 
-      {key: "tipo_documento", sortable: true},
-      {key: "numero_documento", sortable: true},
-      {key: "luogo_rilascio_documento", sortable: true},
-      {key: "data_arrivo", sortable: true},
-      {key: "data_partenza", sortable: true},
-      {key: "tipo_alloggiato", sortable: true},
+      { key: "tipo_documento", sortable: true },
+      { key: "numero_documento", sortable: true },
+      { key: "luogo_rilascio_documento", sortable: true },
+      { key: "data_arrivo", sortable: true },
+      { key: "data_partenza", sortable: true },
+      { key: "tipo_alloggiato", sortable: true },
       // {key: "desc_cittadinanza", sortable: true},
       // {key: "desc_comune_nascita", sortable: true},
       // {key: "desc_provincia_nascita", sortable: true},
@@ -125,19 +229,20 @@ export default defineComponent({
       { key: "actions", width: 80 },
     ];
     // const comuni = d3.csv('../data/comuni.csv')
-    // const tipo_alloggiato = 
+    // const tipo_alloggiato =
     return {
       items,
       columns,
-      // comuni,
-      tipo_alloggiato: tipo_alloggiato,
-      stati: stati,
-      hello: comuni,
-      selected_alloggio: '',
-      selected_comune: '',
       editedItemId: null,
       editedItem: null,
       createdItem: { ...defaultItem },
+      tipo_alloggiato: tipo_alloggiato,
+      sesso: sesso,
+      stati: stati,
+      province: province,
+      comuni: comuni,
+      temp: "",
+      documenti: documenti,
     };
   },
 
@@ -147,20 +252,48 @@ export default defineComponent({
         (key) => !!this.createdItem[key]
       );
     },
-     options() {
-       // console.log(this.tipo_alloggiato)
-       return this.tipo_alloggiato
-     },
-     optionss() {
-      console.log(this.stati)
-       return this.stati
-     },
+    find_comune() {
+      let prov = this.createdItem.provincia_nascita
+      console.log(this.temp)
+      let t = this.comuni
+      let tt = t.filter( function(el) {return el.Provincia==prov & el.DataFineVal===null}
+      )    
+      console.log(tt)
+      return tt
+    },
+    tipi_alloggiato() {
+      // console.log(this.tipo_alloggiato)
+      return this.tipo_alloggiato;
+    },
+    tipi_sesso() {
+      // console.log(this.sesso)
+      return this.sesso;
+    },
+    tipi_comuni() {
+      var local_comuni = this.comuni
+      // console.log(this.comuni);
+      return local_comuni;
+    },
+    tipi_province() {
+      // console.log(this.provincie)
+      return this.province;
+    },
+    tipi_stati() {
+      // console.log(this.comuni);
+      return this.stati;
+    },
+    tipi_documento() {
+      // console.log(this.documenti);
+      return this.documenti;
+    },
   },
   mounted() {
-    console.log('App loaded!')
+    this.temp = "";
+    console.log("App loaded!");
   },
   methods: {
     async fetchData() {
+      return this.items.toString()
     },
     resetEditedItem() {
       this.editedItem = null;
@@ -176,7 +309,28 @@ export default defineComponent({
       this.items = [...this.items, { ...this.createdItem }];
       this.resetCreatedItem();
     },
+    formatDate(date) {
+      function padTo2Digits(num) {
+        return num.toString().padStart(2, "0");
+      }
+      let current_date = new Date()
+      try {
+        return [
+          padTo2Digits(date.getDate()),
+          padTo2Digits(date.getMonth() + 1),
+          date.getFullYear(),
+        ].join("/");
+      } catch (error) {
+        return [
+          padTo2Digits(current_date.getDate()),
+          padTo2Digits(current_date.getMonth() + 1),
+          current_date.getFullYear(),
+        ].join("/");
+      }
+    },
     editItem() {
+      console.log(this.items);
+      this.editedItem.data_nascita = this.formatDate(this.editedItem.data_nascita)
       this.items = [
         ...this.items.slice(0, this.editedItemId),
         { ...this.editedItem },
@@ -188,8 +342,18 @@ export default defineComponent({
       this.editedItemId = id;
       this.editedItem = { ...this.items[id] };
     },
+    format_codice(s) {
+      return "CODICE: " + s.toString;
+    },
+    set_readonly() {
+        if (this.createdItem.tipo_alloggiato  == 19 || this.createdItem.tipo_alloggiato == 20) {
+          return true
+        } else {
+          return false
+        }
+    }
   },
-  });
+});
 </script>
 
 <style lang="scss" scoped>
@@ -200,4 +364,11 @@ export default defineComponent({
     vertical-align: middle;
   }
 }
+  .row.row-inside {
+    max-width: none;
+  }
+
+  .va-input-wrapper, fieldset {
+    margin-bottom: 0.5rem;
+  }
 </style>
