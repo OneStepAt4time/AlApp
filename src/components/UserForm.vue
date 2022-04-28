@@ -36,6 +36,7 @@
         clearable
       />
   </div>
+    <div class="row">
   <va-date-input
     class="display-7"
     label="Data di Nascita"
@@ -55,7 +56,6 @@
     searchable
     clearable
     track-by="Codice"
-    @scrollBottom="pushMoreOptions()"
   />
   <va-select
     label="Provincia di Nascita"
@@ -67,7 +67,6 @@
     searchable
     clearable
     track-by="Sigla"
-    @scrollBottom="pushMoreOptions()"
   />
   <va-select
     label="Comune nascita"
@@ -81,6 +80,8 @@
     clearable
     @scrollBottom="pushMoreOptions()"
   />
+    </div>
+    <div class="row">
   <va-select
     label="Cittadinanza"
     :options="tipi_stati"
@@ -112,21 +113,19 @@
     v-model="createdItem.numero_documento"
     clearable
   />
+    </div>
   <div class="px-2">
     <va-button  @click="addNewItem()" :disabled="!isNewData"> Aggiungi </va-button>
   </div>
   
-    <h6>codice:{{createdItem}} </h6>
-
   <va-divider>
       <span class="px-2">Tabella</span>
   </va-divider>
 
     <va-input
       class="mb-4"
-      v-model="fetchData"
       type="textarea"
-      placeholder="Basic textarea"
+      :placeholder="createdItem.toString"
       readonly
     />
 
@@ -186,21 +185,21 @@ export default defineComponent({
   data() {
     const items = [
       {
-        id: 0,
-        cittadinanza: "",
-        cognome: "",
-        data_arrivo: "",
-        data_nascita: "",
-        data_partenza: "",
-        comune_nascita: 0,
-        provincia_nascita: 0,
-        stato_nascita: 0,
-        luogo_rilascio_documento: "",
-        nome: "",
-        numero_documento: "",
-        sesso: 0,
-        tipo_alloggiato: 0,
-        tipo_documento: "",
+        // id: 0,
+        // cittadinanza: "",
+        // cognome: "",
+        // data_arrivo: "",
+        // data_nascita: "",
+        // data_partenza: "",
+        // comune_nascita: 0,
+        // provincia_nascita: 0,
+        // stato_nascita: 0,
+        // luogo_rilascio_documento: "",
+        // nome: "",
+        // numero_documento: "",
+        // sesso: 0,
+        // tipo_alloggiato: 0,
+        // tipo_documento: "",
       },
     ];
     const columns = [
@@ -306,6 +305,10 @@ export default defineComponent({
       this.items = [...this.items.slice(0, id), ...this.items.slice(id + 1)];
     },
     addNewItem() {
+      this.createdItem.tipo_alloggiato = this.createdItem.tipo_alloggiato.padStart(2, ' ')
+      this.createdItem.data_arrivo = this.formatDate(this.createdItem.data_arrivo)
+      // this.createdItem.giorni_permanenza = this.formatDate(this.createdItem.giorni_permanenza)
+      this.createdItem.data_nascita = this.formatDate(this.createdItem.data_nascita)
       this.items = [...this.items, { ...this.createdItem }];
       this.resetCreatedItem();
     },
