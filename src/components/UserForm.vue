@@ -1,12 +1,13 @@
 <template>
 
-  <div class="row">
+  <div class="row flex">
     <va-select
       label="Tipo Alloggiato"
       :options="tipi_alloggiato"
       v-model="createdItem.tipo_alloggiato"
       text-by="Descrizione"
       value-by="Codice"
+      required
       clearable
     />
     <va-date-input
@@ -17,9 +18,8 @@
       mode="range"
     />
   </div>
-  <div class="row">
+  <div class="row flex gutter--md">
       <va-input
-        class="flex"
         label="Nome"
         placeholder=""
         v-model="createdItem.nome"
@@ -27,14 +27,12 @@
       />
 
       <va-input
-        class="flex"
         label="Cognome"
         placeholder=""
         v-model="createdItem.cognome"
         clearable
       />
       <va-select
-        class="flex"
         label="Sesso"
         :options="tipi_sesso"
         v-model="createdItem.sesso"
@@ -43,16 +41,14 @@
         clearable
       />
   </div>
-    <div class="row">
+    <div class="row flex">
   <va-date-input
-    class="display-7"
     label="Data di Nascita"
     placeholder="Seleziona la data"
     v-model="createdItem.data_nascita"
+    mode="single"
     clearable
   />
-  {{ formatDate(createdItem.data_nascita) }}
-
   <va-select
     label="Stato di Nascita"
     :options="tipi_stati"
@@ -72,22 +68,29 @@
     value-by="Sigla"
     outline
     searchable
+    :placeholder="set_readonly_non_nato_italia()===true ?  'riempito automaticamente con spazi bianchi': ''"
+    :readonly="set_readonly_non_nato_italia()"
+    :color="set_readonly_non_nato_italia()===true ? 'success' : ''"
     clearable
     track-by="Sigla"
   />
   <va-select
     label="Comune nascita"
-    :options="find_comune"
+    :options="find_comune_nascita"
     v-model="createdItem.comune_nascita"
     text-by="Descrizione"
     value-by="Codice"
     outline
+    :placeholder="set_readonly_non_nato_italia()===true ?  'riempito automaticamente con spazi bianchi': ''"
+    :readonly="set_readonly_non_nato_italia()"
+    :color="set_readonly_non_nato_italia()===true ? 'success' : ''"
     :loading="false"
     searchable
     clearable
   />
     </div>
-    <div class="row">
+  <div>
+    <div class="row flex gutter--md">
   <va-select
     label="Cittadinanza"
     :options="tipi_stati"
@@ -109,23 +112,73 @@
     outline
     searchable
     clearable
-    :readonly="set_readonly()"
+    :placeholder="set_readonly_tipo_alloggiato()===true ?  'riempito automaticamente con spazi bianchi': ''"
+    :readonly="set_readonly_tipo_alloggiato()"
+    :color="set_readonly_tipo_alloggiato()===true ? 'success' : ''"
     track-by="Codice"
   />
-
   <va-input
     label="Numero documento"
-    placeholder=""
     v-model="createdItem.numero_documento"
+    :placeholder="set_readonly_tipo_alloggiato()===true ?  'riempito automaticamente con spazi bianchi': ''"
+    :readonly="set_readonly_tipo_alloggiato()"
+    :color="set_readonly_tipo_alloggiato()===true ? 'success' : ''"
+    clearable
+  />
+  <div class="row flex gutter--md">
+  <va-select
+    label="Stato di rilascio documento"
+    :options="tipi_stati"
+    v-model="createdItem.stato_rilascio_documento"
+    text-by="Descrizione"
+    value-by="Codice"
+    outline
+    searchable
+    clearable
+    :placeholder="set_readonly_tipo_alloggiato()===true ?  'riempito automaticamente con spazi bianchi': ''"
+    :readonly="set_readonly_tipo_alloggiato()"
+    :color="set_readonly_tipo_alloggiato()===true ? 'success' : ''"
+    track-by="Codice"
+  />
+  <va-select
+    label="Provincia di rilascio documento"
+    :options="tipi_province"
+    v-model="createdItem.provincia_rilascio_documento"
+    text-by="Provincia"
+    value-by="Sigla"
+    outline
+    searchable
+    clearable
+    :placeholder="set_readonly_tipo_alloggiato()===true ?  'riempito automaticamente con spazi bianchi': ''"
+    :readonly="set_readonly_tipo_alloggiato()"
+    :color="set_readonly_tipo_alloggiato()===true ? 'success' : ''"
+    track-by="Sigla"
+  />
+  <va-select
+    label="Comune rilascio documento"
+    :options="find_comune_rilascio_doc"
+    v-model="createdItem.comune_rilascio_documento"
+    text-by="Descrizione"
+    value-by="Codice"
+    :placeholder="set_readonly_tipo_alloggiato()===true ?  'riempito automaticamente con spazi bianchi': ''"
+    :readonly="set_readonly_tipo_alloggiato()"
+    :color="set_readonly_tipo_alloggiato()===true ? 'success' : ''"
+    outline
+    :loading="false"
+    searchable
     clearable
   />
   </div>
-  <div class="px-2">
-    <va-button  @click="addNewItem()" > Aggiungi </va-button>
+    </div>
+  </div>
+  <div class="row flex gutter--md ">
+    <div class="row align--center">
+    <va-button  @click="addNewItem()" style="align--center" > Aggiungi </va-button>
+    </div>
   </div>
   
   <va-divider>
-      <span class="px-2">Tabella</span>
+      <span class="px-2">File di testo</span>
   </va-divider>
 
     <va-input
@@ -158,7 +211,7 @@
 
   <va-modal
     :model-value="!!editedItem"
-    message="Edit item"
+    message="Modifica la riga"
     @ok="editItem()"
     @cancel="resetEditedItem()"
   >
@@ -184,9 +237,12 @@ import tipo_alloggiato from "../data/tipo_alloggiato.csv";
 import province from '../data/province-sigle.csv';
 
 const defaultItem = {
-  tipo_alloggiato: "",
-  provincia_nascita: "",
+  tipo_documento:"",
+  numero_documento: "",
   luogo_rilascio_documento: "",
+  comune_nascita: "",
+  provincia_nascita: "",
+  stato_nascita: 100000100, // ITALIA
 };
 
 export default defineComponent({
@@ -212,28 +268,21 @@ export default defineComponent({
       },
     ];
     const columns = [
-      { key: "id", sortable: true, value: 1 },
-      { key: "nome", sortable: true, value: this.input_tipo_documento },
-      { key: "cognome", sortable: true },
-      { key: "sesso", sortable: true },
-      { key: "data_nascita", sortable: true },
-      { key: "comune_nascita", sortable: true },
-      { key: "provincia_nascita", sortable: true },
-      { key: "stato_nascita", sortable: true },
-      { key: "cittadinanza", sortable: true },
-
-      { key: "tipo_documento", sortable: true },
-      { key: "numero_documento", sortable: true },
-      { key: "luogo_rilascio_documento", sortable: true },
-      { key: "data_arrivo", sortable: true },
-      { key: "data_partenza", sortable: true },
-      { key: "tipo_alloggiato", sortable: true },
-      // {key: "desc_cittadinanza", sortable: true},
-      // {key: "desc_comune_nascita", sortable: true},
-      // {key: "desc_provincia_nascita", sortable: true},
-      // {key: "desc_sesso", sortable: true},
-      // {key: "desc_stato_nascita", sortable: true},
-      // {key: "desc_tipo_alloggiato", sortable: true},
+     // { key: "id", sortable: true, value: 1 },
+      { key: "tipo_alloggiato", sortable: true},
+      { key: "data_arrivo", sortable: true},
+      { key: "giorni_permanenza", sortable: true},
+      { key: "cognome", sortable: true},
+      { key: "nome", sortable: true},
+      { key: "sesso", sortable: true},
+      { key: "data_nascita", sortable: true},
+      { key: "comune_nascita", sortable: true},
+      { key: "provincia_nascita", sortable: true},
+      { key: "stato_nascita", sortable: true},
+      { key: "cittadinanza", sortable: true},
+      { key: "tipo_documento", sortable: true},
+      { key: "numero_documento", sortable: true},
+      { key: "luogo_rilascio_documento", sortable: true},
       { key: "actions", width: 80 },
     ];
     // const comuni = d3.csv('../data/comuni.csv')
@@ -264,8 +313,17 @@ export default defineComponent({
         (key) => !!this.createdItem[key]
       );
     },
-    find_comune() {
+    find_comune_nascita() {
       let prov = this.createdItem.provincia_nascita
+      console.log(this.temp)
+      let t = this.comuni
+      let tt = t.filter( function(el) {return el.Provincia==prov & el.DataFineVal===null}
+      )    
+      console.log(tt)
+      return tt
+    },
+    find_comune_rilascio_doc() {
+      let prov = this.createdItem.provincia_rilascio_documento
       console.log(this.temp)
       let t = this.comuni
       let tt = t.filter( function(el) {return el.Provincia==prov & el.DataFineVal===null}
@@ -305,7 +363,21 @@ export default defineComponent({
       for (let i in temp_items) {
         let item = temp_items[parseInt(i)]
         if (Boolean(item.tipo_alloggiato)=== true) {
-          plain_text+=item.tipo_alloggiato+"\n"
+          plain_text+=
+          item.tipo_alloggiato+","+
+          item.data_arrivo+","+
+          item.giorni_permanenza+","+
+          item.cognome+","+
+          item.nome+","+
+          item.sesso+","+
+          item.data_nascita+","+
+          item.comune_nascita+","+
+          item.provincia_nascita+","+
+          item.stato_nascita+","+
+          item.cittadinanza+","+
+          item.tipo_documento+","+
+          item.numero_documento+","+
+          item.luogo_rilascio_documento+"\n"
         } else {
           continue
         }
@@ -336,8 +408,17 @@ export default defineComponent({
       this.createdItem.tipo_alloggiato = this.createdItem.tipo_alloggiato.toString().padStart(2, ' ')
       this.createdItem.data_arrivo = this.formatDate(this.date_permanenza.start)
       this.createdItem.giorni_permanenza = parseInt((this.date_permanenza.end - this.date_permanenza.start)/(24*60*60*1e3)).toString().padStart(2, '0')
-     // this.createdItem.giorni_permanenza = this.formatDate(this.createdItem.giorni_permanenza)
+      this.createdItem.cognome = this.createdItem.cognome.toString().padStart(50, ' ')
+      this.createdItem.nome = this.createdItem.nome.toString().padStart(30, ' ')
       this.createdItem.data_nascita = this.formatDate(this.createdItem.data_nascita)
+      this.createdItem.comune_nascita = this.createdItem.comune_nascita.toString().padStart(9, ' ')
+      this.createdItem.provincia_nascita = this.createdItem.provincia_nascita.toString().padStart(2, ' ')
+      this.createdItem.stato_nascita = this.createdItem.stato_nascita.toString().padStart(9, ' ')
+      this.createdItem.cittadinanza = this.createdItem.cittadinanza.toString().padStart(9, ' ')
+      this.createdItem.tipo_documento = this.createdItem.tipo_documento.toString().padStart(5, ' ')
+      this.createdItem.numero_documento = this.createdItem.numero_documento.toString().padStart(20, ' ')
+      this.createdItem.luogo_rilascio_documento = this.createdItem.luogo_rilascio_documento.toString().padStart(9, ' ')
+
       this.items = [...this.items, { ...this.createdItem }];
       this.resetCreatedItem();
     },
@@ -353,6 +434,7 @@ export default defineComponent({
           date.getFullYear(),
         ].join("/");
       } catch (error) {
+        console.log("diomerda")
         return [
           padTo2Digits(current_date.getDate()),
           padTo2Digits(current_date.getMonth() + 1),
@@ -374,8 +456,15 @@ export default defineComponent({
       this.editedItemId = id;
       this.editedItem = { ...this.items[id] };
     },
-    set_readonly() {
-        if (this.createdItem.tipo_alloggiato  == 19 || this.createdItem.tipo_alloggiato == 20) {
+    set_readonly_tipo_alloggiato() {
+        if (this.createdItem.tipo_alloggiato  === 19 || this.createdItem.tipo_alloggiato === 20) {
+          return true
+        } else {
+          return false
+        }
+    },
+    set_readonly_non_nato_italia() {
+        if (this.createdItem.stato_nascita != 100000100) {
           return true
         } else {
           return false
