@@ -425,8 +425,12 @@ export default defineComponent({
       this.createdItem.cittadinanza = this.createdItem.cittadinanza.toString().padStart(9, ' ')
       this.createdItem.tipo_documento = this.createdItem.tipo_documento.toString().padStart(5, ' ')
       this.createdItem.numero_documento = this.createdItem.numero_documento.toString().padStart(20, ' ')
-      this.createdItem.luogo_rilascio_documento = this.createdItem.luogo_rilascio_documento.toString().padStart(9, ' ')
-
+      if (this.createdItem.stato_rilascio_documento === 100000100) { // italia
+          this.createdItem.luogo_rilascio_documento = this.createdItem.comune_rilascio_documento.toString().padStart(9, ' ')
+      } else {
+        this.createdItem.luogo_rilascio_documento = this.createdItem.stato_rilascio_documento.toString().padStart(9, ' ')
+      }
+      
       this.items = [...this.items, { ...this.createdItem }];
       this.resetCreatedItem();
     },
