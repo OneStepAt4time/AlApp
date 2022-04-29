@@ -15,6 +15,7 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    icon:__dirname + "../assets/ServAllo.ico",
     webPreferences: {
       
       // Use pluginOptions.nodeIntegration, leave this alone
