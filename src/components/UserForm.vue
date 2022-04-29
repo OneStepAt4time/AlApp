@@ -1,6 +1,6 @@
 <template>
 
-  <div class="row flex">
+  <div class="row flex gutter--md">
     <va-select
       label="Tipo Alloggiato"
       :options="tipi_alloggiato"
@@ -18,7 +18,9 @@
       mode="range"
     />
   </div>
-  <div class="row flex gutter--md">
+
+  <div class="row flex">
+
       <va-input
         label="Nome"
         placeholder=""
@@ -40,7 +42,9 @@
         value-by="Codice"
         clearable
       />
+    
   </div>
+  
     <div class="row flex">
   <va-date-input
     label="Data di Nascita"
@@ -171,10 +175,8 @@
   </div>
     </div>
   </div>
-  <div class="row flex gutter--md ">
-    <div class="row align--center">
-    <va-button  @click="addNewItem()" style="align--center" > Aggiungi </va-button>
-    </div>
+  <div class="row flex">
+    <va-button  icon="add" @click="addNewItem()"  > Aggiungi </va-button>
   </div>
   
   <va-divider>
@@ -182,6 +184,7 @@
   </va-divider>
 
     <va-input
+      id="myTextarea"
       class="mb-4"
       type="textarea"
       v-model="write_text"
@@ -225,10 +228,14 @@
       />
     </slot>
   </va-modal>  
+   <div class="row flex">
+    <va-button icon="download"  @click="save_txt()"  > Download </va-button>
+    </div>
 </template>
 
 <script>
 import { defineComponent } from "vue";
+import { saveAs } from 'file-saver';
 import sesso from "../data/sesso.csv";
 import comuni from "../data/comuni.csv";
 import stati from "../data/stati.csv";
@@ -243,6 +250,7 @@ const defaultItem = {
   comune_nascita: "",
   provincia_nascita: "",
   stato_nascita: 100000100, // ITALIA
+  cittadinanza: 100000100, // ITALIA
 };
 
 export default defineComponent({
@@ -384,7 +392,7 @@ export default defineComponent({
       }   
     console.log('plain: \t'+plain_text)     
     return plain_text!="" ? plain_text : ""
-    }
+    },
   },
   mounted() {
     this.temp = "";
@@ -434,7 +442,7 @@ export default defineComponent({
           date.getFullYear(),
         ].join("/");
       } catch (error) {
-        console.log("diomerda")
+        console.log("Errore")
         return [
           padTo2Digits(current_date.getDate()),
           padTo2Digits(current_date.getMonth() + 1),
@@ -469,7 +477,14 @@ export default defineComponent({
         } else {
           return false
         }
-    }
+    },
+    save_txt() {
+      let filename = this.formatDate(new Date()).replace('/', '')
+      var textFile = this.write_text,
+      data = new Blob([textFile], { type: "text/plain" });
+      saveAs(data, "filename_"+filename+".txt")
+
+    },
   },
 });
 </script>
