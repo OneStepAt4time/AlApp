@@ -1,7 +1,7 @@
 <template>
 
-  <div class="row flex gutter--md">
-    <va-select
+  <div class="row flex"  style="margin-left=5px; margin-right=5px;">
+    <va-select style="margin: 0px;"
       label="Tipo Alloggiato"
       :options="tipi_alloggiato"
       v-model="createdItem.tipo_alloggiato"
@@ -10,7 +10,7 @@
       required
       clearable
     />
-    <va-date-input
+    <va-date-input style="margin: 0px;"
       class="display-7"
       label="Date di permanenza"
       v-model="date_permanenza"
@@ -21,20 +21,20 @@
 
   <div class="row flex">
 
-      <va-input
+      <va-input style="margin: 0px;"
         label="Nome"
         placeholder=""
         v-model="createdItem.nome"
         clearable
       />
 
-      <va-input
+      <va-input style="margin: 0px;"
         label="Cognome"
         placeholder=""
         v-model="createdItem.cognome"
         clearable
       />
-      <va-select
+      <va-select style="margin: 0px;"
         label="Sesso"
         :options="tipi_sesso"
         v-model="createdItem.sesso"
@@ -46,14 +46,14 @@
   </div>
   
     <div class="row flex">
-  <va-date-input
+  <va-date-input style="margin: 0px;"
     label="Data di Nascita"
     placeholder="Seleziona la data"
     v-model="createdItem.data_nascita"
     mode="single"
     clearable
   />
-  <va-select
+  <va-select style="margin: 0px;"
     label="Stato di Nascita"
     :options="tipi_stati"
     v-model="createdItem.stato_nascita"
@@ -64,7 +64,7 @@
     clearable
     track-by="Codice"
   />
-  <va-select
+  <va-select style="margin: 0px;"
     label="Provincia di Nascita"
     :options="tipi_province"
     v-model="createdItem.provincia_nascita"
@@ -72,30 +72,24 @@
     value-by="Sigla"
     outline
     searchable
-    :placeholder="set_readonly_non_nato_italia()===true ?  'riempito automaticamente con spazi bianchi': ''"
-    :readonly="set_readonly_non_nato_italia()"
-    :color="set_readonly_non_nato_italia()===true ? 'success' : ''"
     clearable
     track-by="Sigla"
   />
-  <va-select
+  <va-select style="margin: 0px;"
     label="Comune nascita"
     :options="find_comune_nascita"
     v-model="createdItem.comune_nascita"
     text-by="Descrizione"
     value-by="Codice"
     outline
-    :placeholder="set_readonly_non_nato_italia()===true ?  'riempito automaticamente con spazi bianchi': ''"
-    :readonly="set_readonly_non_nato_italia()"
-    :color="set_readonly_non_nato_italia()===true ? 'success' : ''"
     :loading="false"
     searchable
     clearable
   />
-    </div>
+ </div>
   <div>
     <div class="row flex gutter--md">
-  <va-select
+  <va-select style="margin: 0px;"
     label="Cittadinanza"
     :options="tipi_stati"
     v-model="createdItem.cittadinanza"
@@ -107,7 +101,7 @@
     track-by="Codice"
   />
 
-  <va-select
+  <va-select  style="margin: 0px;"
     label="Tipo documento"
     :options="tipi_documento"
     v-model="createdItem.tipo_documento"
@@ -116,21 +110,15 @@
     outline
     searchable
     clearable
-    :placeholder="set_readonly_tipo_alloggiato()===true ?  'riempito automaticamente con spazi bianchi': ''"
-    :readonly="set_readonly_tipo_alloggiato()"
-    :color="set_readonly_tipo_alloggiato()===true ? 'success' : ''"
     track-by="Codice"
   />
-  <va-input
+  <va-input style="margin: 0px;"
     label="Numero documento"
     v-model="createdItem.numero_documento"
-    :placeholder="set_readonly_tipo_alloggiato()===true ?  'riempito automaticamente con spazi bianchi': ''"
-    :readonly="set_readonly_tipo_alloggiato()"
-    :color="set_readonly_tipo_alloggiato()===true ? 'success' : ''"
     clearable
   />
   <div class="row flex gutter--md">
-  <va-select
+  <va-select style="margin: 0px;"
     label="Stato di rilascio documento"
     :options="tipi_stati"
     v-model="createdItem.stato_rilascio_documento"
@@ -139,12 +127,9 @@
     outline
     searchable
     clearable
-    :placeholder="set_readonly_tipo_alloggiato()===true ?  'riempito automaticamente con spazi bianchi': ''"
-    :readonly="set_readonly_tipo_alloggiato()"
-    :color="set_readonly_tipo_alloggiato()===true ? 'success' : ''"
     track-by="Codice"
   />
-  <va-select
+  <va-select style="margin: 0px;"
     label="Provincia di rilascio documento"
     :options="tipi_province"
     v-model="createdItem.provincia_rilascio_documento"
@@ -153,20 +138,14 @@
     outline
     searchable
     clearable
-    :placeholder="set_readonly_tipo_alloggiato()===true ?  'riempito automaticamente con spazi bianchi': ''"
-    :readonly="set_readonly_tipo_alloggiato()"
-    :color="set_readonly_tipo_alloggiato()===true ? 'success' : ''"
     track-by="Sigla"
   />
-  <va-select
+  <va-select style="margin: 0px;"
     label="Comune rilascio documento"
     :options="find_comune_rilascio_doc"
     v-model="createdItem.comune_rilascio_documento"
     text-by="Descrizione"
     value-by="Codice"
-    :placeholder="set_readonly_tipo_alloggiato()===true ?  'riempito automaticamente con spazi bianchi': ''"
-    :readonly="set_readonly_tipo_alloggiato()"
-    :color="set_readonly_tipo_alloggiato()===true ? 'success' : ''"
     outline
     :loading="false"
     searchable
@@ -175,15 +154,15 @@
   </div>
     </div>
   </div>
-  <div class="row flex">
+  <div class="row flex align--center" style="width: 100%; margin: 0px;">
     <va-button  icon="add" @click="addNewItem()"  > Aggiungi </va-button>
   </div>
   
-  <va-divider>
+   <va-switch v-model="file_preview" label="Mostra anteprima del file" left-label true-inner-label="Si" false-inner-label="No" size="small" class="mr-4" style="margin: 0px;" />
+     <va-divider v-if="file_preview">
       <span class="px-2">File di testo</span>
   </va-divider>
-
-    <va-input
+    <va-input v-if="file_preview" style="margin: 10px;"
       id="myTextarea"
       class="mb-4"
       type="textarea"
@@ -196,7 +175,7 @@
       <span class="px-2">Tabella</span>
   </va-divider>
 
-  <va-data-table :items="items" :columns="columns" striped>
+  <va-data-table :items="items" :columns="columns" striped style="margin: 0px;">
     <template #headerAppend>
       <tr class="table-example--slot">
         <th v-for="key in Object.keys(createdItem)" :key="key" colspan="1">
@@ -249,6 +228,11 @@ const defaultItem = {
   luogo_rilascio_documento: "",
   comune_nascita: "",
   provincia_nascita: "",
+  data_nascita: new Date(),
+      date_permanenza: {
+          start: new Date(),
+          end: new Date()
+      },
   stato_nascita: 100000100, // ITALIA
   cittadinanza: 100000100, // ITALIA
 };
@@ -257,23 +241,6 @@ export default defineComponent({
   name: 'form-elements',
   data() {
     const items = [
-      {
-        // id: 0,
-        // cittadinanza: "",
-        // cognome: "",
-        // data_arrivo: "",
-        // data_nascita: "",
-        // data_partenza: "",
-        // comune_nascita: 0,
-        // provincia_nascita: 0,
-        // stato_nascita: 0,
-        // luogo_rilascio_documento: "",
-        // nome: "",
-        // numero_documento: "",
-        // sesso: 0,
-        // tipo_alloggiato: 0,
-        // tipo_documento: "",
-      },
     ];
     const columns = [
      // { key: "id", sortable: true, value: 1 },
@@ -297,15 +264,17 @@ export default defineComponent({
     // const tipo_alloggiato =
     return {
       items,
+      file_preview: true,
       columns,
       date_permanenza: {
-          start: null,
-          end: null
+          start: new Date(),
+          end: new Date()
       },
       editedItemId: null,
       editedItem: null,
       createdItem: { ...defaultItem },
       tipo_alloggiato: tipo_alloggiato,
+      data_nascita: this.data_nascita,
       sesso: sesso,
       stati: stati,
       province: province,
@@ -370,22 +339,26 @@ export default defineComponent({
       console.log('temp' + temp_items.toString())
       for (let i in temp_items) {
         let item = temp_items[parseInt(i)]
+          console.log(parseInt(i))
         if (Boolean(item.tipo_alloggiato)=== true) {
+          if (i>0) {
+            plain_text+='\n'
+          }
           plain_text+=
-          item.tipo_alloggiato+","+
-          item.data_arrivo+","+
-          item.giorni_permanenza+","+
-          item.cognome+","+
-          item.nome+","+
-          item.sesso+","+
-          item.data_nascita+","+
-          item.comune_nascita+","+
-          item.provincia_nascita+","+
-          item.stato_nascita+","+
-          item.cittadinanza+","+
-          item.tipo_documento+","+
-          item.numero_documento+","+
-          item.luogo_rilascio_documento+"\n"
+          item.tipo_alloggiato+
+          item.data_arrivo+
+          item.giorni_permanenza+
+          item.cognome+
+          item.nome+
+          item.sesso+
+          item.data_nascita+
+          item.comune_nascita+
+          item.provincia_nascita+
+          item.stato_nascita+
+          item.cittadinanza+
+          item.tipo_documento+
+          item.numero_documento+
+          item.luogo_rilascio_documento
         } else {
           continue
         }
@@ -412,23 +385,33 @@ export default defineComponent({
     deleteItemById(id) {
       this.items = [...this.items.slice(0, id), ...this.items.slice(id + 1)];
     },
+    castToString(s) {
+        try {
+          return s
+        } catch (error) {
+          console.error(error);
+          return ""
+        }
+    },
     addNewItem() {
-      this.createdItem.tipo_alloggiato = this.createdItem.tipo_alloggiato.toString().padStart(2, ' ')
-      this.createdItem.data_arrivo = this.formatDate(this.date_permanenza.start)
-      this.createdItem.giorni_permanenza = parseInt((this.date_permanenza.end - this.date_permanenza.start)/(24*60*60*1e3)).toString().padStart(2, '0')
-      this.createdItem.cognome = this.createdItem.cognome.toString().padStart(50, ' ')
-      this.createdItem.nome = this.createdItem.nome.toString().padStart(30, ' ')
-      this.createdItem.data_nascita = this.formatDate(this.createdItem.data_nascita)
-      this.createdItem.comune_nascita = this.createdItem.comune_nascita.toString().padStart(9, ' ')
-      this.createdItem.provincia_nascita = this.createdItem.provincia_nascita.toString().padStart(2, ' ')
-      this.createdItem.stato_nascita = this.createdItem.stato_nascita.toString().padStart(9, ' ')
-      this.createdItem.cittadinanza = this.createdItem.cittadinanza.toString().padStart(9, ' ')
-      this.createdItem.tipo_documento = this.createdItem.tipo_documento.toString().padStart(5, ' ')
-      this.createdItem.numero_documento = this.createdItem.numero_documento.toString().padStart(20, ' ')
+      console.log(this.createdItem)
+
+      this.createdItem.tipo_alloggiato = this.castToString(this.createdItem.tipo_alloggiato.toString().padEnd(2, ' '))
+      this.createdItem.data_arrivo =  this.castToString(this.formatDate(this.date_permanenza.start))
+      this.createdItem.giorni_permanenza =  this.castToString(parseInt((this.date_permanenza.end - this.date_permanenza.start)/(24*60*60*1e3)).toString().padStart(2, '0'))
+      this.createdItem.cognome =  this.castToString(this.createdItem.cognome.toString().padEnd(50, ' '))
+      this.createdItem.nome =  this.castToString(this.createdItem.nome.toString().padEnd(30, ' '))
+      this.createdItem.data_nascita =  this.castToString(this.formatDate(this.createdItem.data_nascita))
+      this.createdItem.comune_nascita =  this.castToString(this.createdItem.comune_nascita.toString().padEnd(9, ' '))
+      this.createdItem.provincia_nascita =  this.castToString(this.createdItem.provincia_nascita.toString().padEnd(2, ' '))
+      this.createdItem.stato_nascita =  this.castToString(this.createdItem.stato_nascita.toString().padEnd(9, ' '))
+      this.createdItem.cittadinanza =  this.castToString(this.createdItem.cittadinanza.toString().padEnd(9, ' '))
+      this.createdItem.tipo_documento =  this.castToString(this.createdItem.tipo_documento.toString().padEnd(5, ' '))
+      this.createdItem.numero_documento =  this.castToString(this.createdItem.numero_documento.toString().padEnd(20, ' '))
       if (this.createdItem.stato_rilascio_documento === 100000100) { // italia
-          this.createdItem.luogo_rilascio_documento = this.createdItem.comune_rilascio_documento.toString().padStart(9, ' ')
+          this.createdItem.luogo_rilascio_documento =  this.castToString(this.createdItem.comune_rilascio_documento.toString().padEnd(9, ' '))
       } else {
-        this.createdItem.luogo_rilascio_documento = this.createdItem.stato_rilascio_documento.toString().padStart(9, ' ')
+        this.createdItem.luogo_rilascio_documento =  this.castToString(this.createdItem.stato_rilascio_documento.toString().padEnd(9, ' '))
       }
       
       this.items = [...this.items, { ...this.createdItem }];
@@ -483,11 +466,13 @@ export default defineComponent({
         }
     },
     save_txt() {
+      // const fs = require("fs")
+      // const path = require("path")
       let filename = this.formatDate(new Date()).replace('/', '')
       var textFile = this.write_text,
       data = new Blob([textFile], { type: "text/plain" });
-      saveAs(data, "filename_"+filename+".txt")
 
+      saveAs(data, "Alloggiati"+filename+".txt")
     },
   },
 });
